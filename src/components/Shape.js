@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Rect, Circle } from "react-konva";
 
 const Shape = ({ shape, isSelected, onSelect, onDeselect }) => {
