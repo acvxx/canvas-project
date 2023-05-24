@@ -8,18 +8,33 @@ import {
   Line,
   Ellipse,
 } from "react-konva";
+import Shape from "./Shape";
 
 const Canvas = () => {
   const stageRef = useRef();
+  const trRef = useRef();
+  const shapeRef = useRef();
+  const layerRef = useRef();
+
   const [shapes, setShapes] = useState([]);
   const [selectedShapeId, setSelectedShapeId] = useState(null);
+  const [isSelected, setSelected] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState("white");
   const [shapeType, setShapeType] = useState("");
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
+  const [nodesArray, setNodes] = useState([]);
+  React.useEffect(() => {
+    if (isSelected) {
+      console.log("dkdkdkdkdkk");
+      // we need to attach transformer manually
+      if (trRef.current) {
+        trRef.current.nodes(nodesArray);
+        trRef.current.getLayer().batchDraw();
+      }
+    }
+  }, [isSelected]);
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.evt;
     setStartPoint({ x: offsetX, y: offsetY });
@@ -31,9 +46,7 @@ const Canvas = () => {
   };
 
   const handleMouseUp = () => {
-    console.log(selectedShapeId);
-    if (!isDrawing && selectedShapeId !== null) {
-      console.log(isDrawing, selectedShapeId);
+    /*if (!isDrawing && selectedShapeId !== null) {
       const x = endPoint.x - startPoint.x;
       const y = endPoint.y - startPoint.y;
       const shape1 = shapes[selectedShapeId];
@@ -42,12 +55,12 @@ const Canvas = () => {
         type: shape1.type,
         start: { x: shape1.start.x + x, y: shape1.start.y + y },
         end: { x: shape1.end.x + x, y: shape1.end.y + y },
-        fill: "red",
-        stroke: "black",
+        fill: shape1.fill,
+        stroke: shape1.stroke,
       };
       updateShape(selectedShapeId, updatedShape);
       return;
-    } else if (!isDrawing) return;
+    } else*/ if (!isDrawing) return;
     setIsDrawing(false);
     const shape = {
       type: shapeType, // 원하는 도형 타입 설정
@@ -61,21 +74,35 @@ const Canvas = () => {
     setEndPoint({ x: 0, y: 0 });
   };
 
-  const handleShapeClick = (event, id, shape) => {
-    event.cancelBubble = true;
-    setSelectedShapeId(id);
-    const updatedShape = {
-      type: shape.type,
-      start: { x: shape.start.x, y: shape.start.y },
-      end: { x: shape.end.x, y: shape.end.y },
-      fill: "blue",
-      stroke: "black",
-    };
-    updateShape(id, updatedShape);
+  const handleShapeClick = (event, e, index) => {
+    if (event.evt.ctrlKey) {
+      if (e.current !== undefined) {
+        let temp = nodesArray;
+        if (!nodesArray.includes(e.current)) temp.push(e.current);
+        setNodes(temp);
+        trRef.current.nodes(nodesArray);
+        trRef.current.nodes(nodesArray);
+        trRef.current.getLayer().batchDraw();
+      }
+    } else {
+      event.cancelBubble = true;
+      if (e.current !== undefined) {
+        let temp = [];
+        temp.push(e.current);
+        setNodes(temp);
+        trRef.current.nodes(nodesArray);
+        trRef.current.nodes(nodesArray);
+        trRef.current.getLayer().batchDraw();
+      }
+    }
+    setSelected(true);
+    setSelectedShapeId(index);
   };
 
   const handleStageClick = () => {
+    setSelected(false);
     setSelectedShapeId(null);
+    setNodes([]);
   };
 
   const handleDeleteShape = () => {
@@ -91,6 +118,18 @@ const Canvas = () => {
       updatedShapes[index] = updatedShape;
       return updatedShapes;
     });
+  };
+
+  const toggleSelection = (node) => {
+    var isSelected = nodesArray.includes(node);
+
+    setNodes([...nodesArray, node]);
+    console.log("1" + nodesArray);
+    trRef.current.getLayer().batchDraw();
+    trRef.current.nodes(nodesArray);
+    layerRef.current.batchDraw();
+    console.log("2" + nodesArray);
+    setSelected(true);
   };
 
   return (
@@ -159,28 +198,50 @@ const Canvas = () => {
         onMouseUp={handleMouseUp}
         onClick={handleStageClick}
       >
-        <Layer>
+        <Layer ref={layerRef}>
           {shapes.map((shape, index) => {
             const { start, end } = shape;
             const width = Math.abs(end.x - start.x);
             const height = Math.abs(end.y - start.y);
             const fill = shape.fill;
             const radius = Math.abs(end.x - start.x) / 2;
+            const shapeProps = {
+              type: shape.type,
+              x: start.x,
+              y: start.y,
+              width: width,
+              height: height,
+              stroke: "black",
+              fill: fill,
+            };
             if (shape.type === "rectangle") {
               return (
-                <Rect
+                <Shape
                   key={index}
-                  x={start.x}
-                  y={start.y}
-                  width={width}
-                  height={height}
-                  stroke={"black"}
-                  fill={fill}
-                  onClick={(event) => {
-                    handleShapeClick(event, index, shape);
-                  }}
+                  shapeProps={shapeProps}
+                  ref={shapeRef}
+                  isSelected={index === selectedShapeId}
+                  getLength={shapes.length}
+                  /*onSelect={(e) => {
+                    if (e.current !== undefined) {
+                      let temp = nodesArray;
+                      if (!nodesArray.includes(e.current)) temp.push(e.current);
+                      setNodes(temp);
+                      trRef.current.nodes(nodesArray);
+                      trRef.current.nodes(nodesArray);
+                      trRef.current.getLayer().batchDraw();
+                    }
+                    setSelectedShapeId(index);
+                  }}*/
+                  /*onChange={(newAttrs) => {
+                    const rects = shapes.slice();
+                    rects[index] = newAttrs;
+                    setShapes(rects);
+                    // console.log(rects)
+                  }}*/
+                  onSelect={(event, e) => handleShapeClick(event, e, index)}
+
                   //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
-                  //draggable
                 />
               );
             }
@@ -194,9 +255,12 @@ const Canvas = () => {
                   stroke={"black"}
                   fill={fill}
                   onClick={(event) => {
-                    handleShapeClick(event, index, shape);
+                    if (event.evt.ctrlKey) {
+                      toggleSelection(event.current);
+                      console.log("ctrl 눌렸다.");
+                    } else handleShapeClick(event, index, shape);
                   }}
-                  //draggable
+                  draggable
                 />
               );
             }
@@ -211,9 +275,11 @@ const Canvas = () => {
                   stroke={"black"}
                   fill={fill}
                   onClick={(event) => {
-                    handleShapeClick(event, index, shape);
+                    if (window.event.ctrlKey) {
+                      toggleSelection(event.current);
+                    } else handleShapeClick(event, index, shape);
                   }}
-                  //draggable
+                  draggable
                 />
               );
             }
@@ -225,16 +291,27 @@ const Canvas = () => {
                   stroke={"black"}
                   fill={fill}
                   onClick={(event) => {
-                    handleShapeClick(event, index, shape);
+                    if (window.event.ctrlKey) {
+                      toggleSelection(index, shape);
+                    } else handleShapeClick(event, index, shape);
                   }}
-                  //draggable
+                  draggable
                 />
               );
             }
-            return null;
           })}
+
+          <Transformer
+            ref={trRef}
+            boundBoxFunc={(oldBox, newBox) => {
+              // limit resize
+              if (newBox.width < 5 || newBox.height < 5) {
+                return oldBox;
+              }
+              return newBox;
+            }}
+          />
         </Layer>
-        <Layer></Layer>
       </Stage>
       <button onClick={handleDeleteShape}>Delete</button>
     </div>
