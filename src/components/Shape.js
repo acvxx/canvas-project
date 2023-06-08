@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Rect, Circle } from "react-konva";
+import { Rect, Circle, Ellipse } from "react-konva";
 
 const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
   const shapeRef = React.useRef();
@@ -8,7 +8,6 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
       <Rect
         onClick={(event) => onSelect(event, shapeRef)}
         onTap={(event) => onSelect(event, shapeRef)}
-        // ref={shapeRef.current[getKey]}
         ref={shapeRef}
         {...shapeProps}
         name="rectangle"
@@ -22,26 +21,18 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
           });
         }}
         onTransformEnd={(e) => {
-          console.log(shapeRef.current);
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
 
-          // transformer is changing scale of the node
-          // and NOT its width or height
-          // but in the store we have only width and height
-          // to match the data better we will reset scale on transform end
-          const node = shapeRef.current.attrs;
-          const scaleX = node.scaleX();
-          const scaleY = node.scaleY();
-
-          // we will reset it back
-          node.scaleX(1);
-          node.scaleY(1);
+          e.target.scaleX(1);
+          e.target.scaleY(1);
           onChange({
             ...shapeProps,
-            x: node.x(),
-            y: node.y(),
+            x: e.target.x(),
+            y: e.target.y(),
             // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            width: Math.max(5, e.target.width() * scaleX),
+            height: Math.max(e.target.height() * scaleY),
           });
         }}
       />
@@ -50,39 +41,75 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
   if (shapeProps.type === "circle") {
     return (
       <Circle
-        onClick={() => onSelect(shapeRef)}
-        onTap={() => onSelect(shapeRef)}
+        onClick={(event) => onSelect(event, shapeRef)}
+        onTap={(event) => onSelect(event, shapeRef)}
         // ref={shapeRef.current[getKey]}
         ref={shapeRef}
         {...shapeProps}
+        radius={shapeProps.width / 2}
+        x={shapeProps.x + shapeProps.width / 2}
+        y={shapeProps.y + shapeProps.height / 2}
         name="circle"
         draggable
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
+            x: e.target.x() - shapeProps.width / 2,
+            y: e.target.y() - shapeProps.height / 2,
           });
         }}
         onTransformEnd={(e) => {
-          // transformer is changing scale of the node
-          // and NOT its width or height
-          // but in the store we have only width and height
-          // to match the data better we will reset scale on transform end
-          const node = shapeRef.current;
-          const scaleX = node.scaleX();
-          const scaleY = node.scaleY();
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
 
           // we will reset it back
-          node.scaleX(1);
-          node.scaleY(1);
+          e.target.scaleX(1);
+          e.target.scaleY(1);
           onChange({
             ...shapeProps,
-            x: node.x(),
-            y: node.y(),
+            x: e.target.x() - (e.target.width() * scaleX) / 2,
+            y: e.target.y() - (e.target.height() * scaleY) / 2,
             // set minimal value
-            width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY),
+            width: e.target.width() * scaleX,
+            height: e.target.height() * scaleY,
+          });
+        }}
+      />
+    );
+  }
+  if (shapeProps.type === "ellipse") {
+    return (
+      <Ellipse
+        onClick={(event) => onSelect(event, shapeRef)}
+        onTap={(event) => onSelect(event, shapeRef)}
+        ref={shapeRef}
+        {...shapeProps}
+        x={shapeProps.x + shapeProps.width / 2}
+        y={shapeProps.y + shapeProps.height / 2}
+        radiusX={shapeProps.width / 2}
+        radiusY={shapeProps.height / 2}
+        name="rectangle"
+        draggable
+        onDragEnd={(e) => {
+          console.log(e.target);
+          onChange({
+            ...shapeProps,
+            x: e.target.x() - shapeProps.width / 2,
+            y: e.target.y() - shapeProps.height / 2,
+          });
+        }}
+        onTransformEnd={(e) => {
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          onChange({
+            ...shapeProps,
+            width: e.target.width() * scaleX,
+            height: e.target.height() * scaleY,
+            x: e.target.x() - (e.target.width() * scaleX) / 2,
+            y: e.target.y() - (e.target.height() * scaleY) / 2,
           });
         }}
       />

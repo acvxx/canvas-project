@@ -27,14 +27,13 @@ const Canvas = () => {
   const [nodesArray, setNodes] = useState([]);
   React.useEffect(() => {
     if (isSelected) {
-      console.log("dkdkdkdkdkk");
-      // we need to attach transformer manually
       if (trRef.current) {
         trRef.current.nodes(nodesArray);
         trRef.current.getLayer().batchDraw();
       }
     }
   }, [isSelected]);
+
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.evt;
     setStartPoint({ x: offsetX, y: offsetY });
@@ -60,27 +59,40 @@ const Canvas = () => {
       };
       updateShape(selectedShapeId, updatedShape);
       return;
-    } else*/ if (!isDrawing) return;
+    } else*/
+    if (!isDrawing) return;
     setIsDrawing(false);
-    const shape = {
+    /*const shape = {
       type: shapeType, // 원하는 도형 타입 설정
       start: { ...startPoint },
       end: { ...endPoint },
       fill: color,
       stroke: "black",
     };
-    setShapes([...shapes, shape]);
+    setShapes([...shapes, shape]);*/
+    const shapeProps = {
+      type: shapeType,
+      x: startPoint.x,
+      y: startPoint.y,
+      width: endPoint.x - startPoint.x,
+      height: endPoint.y - startPoint.y,
+      stroke: "black",
+      fill: color,
+    };
+    setShapes([...shapes, shapeProps]);
+
     setStartPoint({ x: 0, y: 0 });
     setEndPoint({ x: 0, y: 0 });
   };
 
   const handleShapeClick = (event, e, index) => {
+    setSelected(true);
+    setSelectedShapeId(index);
     if (event.evt.ctrlKey) {
       if (e.current !== undefined) {
         let temp = nodesArray;
         if (!nodesArray.includes(e.current)) temp.push(e.current);
         setNodes(temp);
-        trRef.current.nodes(nodesArray);
         trRef.current.nodes(nodesArray);
         trRef.current.getLayer().batchDraw();
       }
@@ -91,18 +103,21 @@ const Canvas = () => {
         temp.push(e.current);
         setNodes(temp);
         trRef.current.nodes(nodesArray);
-        trRef.current.nodes(nodesArray);
         trRef.current.getLayer().batchDraw();
       }
     }
-    setSelected(true);
-    setSelectedShapeId(index);
   };
 
-  const handleStageClick = () => {
-    setSelected(false);
-    setSelectedShapeId(null);
-    setNodes([]);
+  const handleStageClick = (e) => {
+    console.log(e);
+    if (e.target === e.target.getStage()) {
+      console.log("stage");
+      setSelected(false);
+      setSelectedShapeId(null);
+      //console.log("handleStageClick");
+      setNodes([]);
+      trRef.current.nodes(nodesArray);
+    }
   };
 
   const handleDeleteShape = () => {
@@ -122,7 +137,7 @@ const Canvas = () => {
 
   const toggleSelection = (node) => {
     var isSelected = nodesArray.includes(node);
-
+    console.log("toggleSelection");
     setNodes([...nodesArray, node]);
     console.log("1" + nodesArray);
     trRef.current.getLayer().batchDraw();
@@ -200,20 +215,24 @@ const Canvas = () => {
       >
         <Layer ref={layerRef}>
           {shapes.map((shape, index) => {
-            const { start, end } = shape;
-            const width = Math.abs(end.x - start.x);
-            const height = Math.abs(end.y - start.y);
+            console.log(shape);
+            const type = shapeType;
+            //const width = Math.abs(end.x - start.x);
+            //const height = Math.abs(end.y - start.y);
             const fill = shape.fill;
-            const radius = Math.abs(end.x - start.x) / 2;
-            const shapeProps = {
-              type: shape.type,
+            //const radius = Math.abs(end.x - start.x) / 2;
+            const shapeProps = shape;
+            /*{
+              type: type,
               x: start.x,
               y: start.y,
               width: width,
               height: height,
               stroke: "black",
               fill: fill,
-            };
+            };*/
+            //setShapes([...shapes, shapeProps]);
+
             if (shape.type === "rectangle") {
               return (
                 <Shape
@@ -233,13 +252,11 @@ const Canvas = () => {
                     }
                     setSelectedShapeId(index);
                   }}*/
-                  /*onChange={(newAttrs) => {
-                    const rects = shapes.slice();
-                    rects[index] = newAttrs;
-                    setShapes(rects);
-                    // console.log(rects)
-                  }}*/
                   onSelect={(event, e) => handleShapeClick(event, e, index)}
+                  onChange={(newAttrs) => {
+                    shapes[index] = newAttrs;
+                    setShapes(shapes);
+                  }}
 
                   //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
                 />
@@ -247,7 +264,21 @@ const Canvas = () => {
             }
             if (shape.type === "circle") {
               return (
-                <Circle
+                <Shape
+                  key={index}
+                  shapeProps={shapeProps}
+                  ref={shapeRef}
+                  isSelected={index === selectedShapeId}
+                  getLength={shapes.length}
+                  onSelect={(event, e) => handleShapeClick(event, e, index)}
+                  onChange={(newAttrs) => {
+                    shapes[index] = newAttrs;
+                    setShapes(shapes);
+                  }}
+                  //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
+                />
+              );
+              /*<Circle
                   key={index}
                   x={(start.x + end.x) / 2}
                   y={(start.y + end.y) / 2}
@@ -262,16 +293,30 @@ const Canvas = () => {
                   }}
                   draggable
                 />
-              );
+              );*/
             }
             if (shape.type === "ellipse") {
               return (
-                <Ellipse
+                <Shape
                   key={index}
-                  x={(start.x + end.x) / 2}
-                  y={(start.y + end.y) / 2}
-                  radiusX={width / 2}
-                  radiusY={height / 2}
+                  shapeProps={shapeProps}
+                  ref={shapeRef}
+                  isSelected={index === selectedShapeId}
+                  getLength={shapes.length}
+                  onSelect={(event, e) => handleShapeClick(event, e, index)}
+                  onChange={(newAttrs) => {
+                    shapes[index] = newAttrs;
+                    setShapes(shapes);
+                  }}
+                  //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
+                />
+              );
+              /*<Ellipse
+                  key={index}
+                  //x={(start.x + end.x) / 2}
+                  //y={(start.y + end.y) / 2}
+                  //radiusX={width / 2}
+                  //radiusY={height / 2}
                   stroke={"black"}
                   fill={fill}
                   onClick={(event) => {
@@ -281,13 +326,13 @@ const Canvas = () => {
                   }}
                   draggable
                 />
-              );
+              );*/
             }
             if (shape.type === "line") {
               return (
                 <Line
                   key={index}
-                  points={[start.x, start.y, end.x, end.y]}
+                  //points={[start.x, start.y, end.x, end.y]}
                   stroke={"black"}
                   fill={fill}
                   onClick={(event) => {
