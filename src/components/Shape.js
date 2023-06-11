@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Rect, Circle, Ellipse } from "react-konva";
+import { Rect, Circle, Ellipse, Line } from "react-konva";
 
 const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
   const shapeRef = React.useRef();
@@ -110,6 +110,45 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
             height: e.target.height() * scaleY,
             x: e.target.x() - (e.target.width() * scaleX) / 2,
             y: e.target.y() - (e.target.height() * scaleY) / 2,
+          });
+        }}
+      />
+    );
+  }
+  if (shapeProps.type == "line") {
+    return (
+      <Line
+        onClick={(event) => onSelect(event, shapeRef)}
+        onTap={(event) => onSelect(event, shapeRef)}
+        ref={shapeRef}
+        {...shapeProps}
+        points={[
+          shapeProps.x,
+          shapeProps.y,
+          shapeProps.x + shapeProps.width,
+          shapeProps.y + shapeProps.height,
+        ]}
+        name="line"
+        draggable
+        onDragEnd={(e) => {
+          console.log(e.target);
+          onChange({
+            ...shapeProps,
+            x: e.target.x(),
+            y: e.target.y(),
+          });
+        }}
+        onTransformEnd={(e) => {
+          const scaleX = e.target.scaleX();
+          const scaleY = e.target.scaleY();
+          e.target.scaleX(1);
+          e.target.scaleY(1);
+          onChange({
+            ...shapeProps,
+            width: e.target.width() * scaleX,
+            height: e.target.height() * scaleY,
+            x: e.target.x(),
+            y: e.target.y(),
           });
         }}
       />

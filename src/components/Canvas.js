@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   Stage,
   Layer,
@@ -9,22 +9,36 @@ import {
   Ellipse,
 } from "react-konva";
 import Shape from "./Shape";
+import CanvasContext from "../CanvasContext";
 
 const Canvas = () => {
   const stageRef = useRef();
   const trRef = useRef();
   const shapeRef = useRef();
   const layerRef = useRef();
+  const {
+    shapes,
+    setShapes,
+    selectedShapeId,
+    setSelectedShapeId,
+    isSelected,
+    setSelected,
+    isDrawing,
+    setIsDrawing,
+    startPoint,
+    setStartPoint,
+    endPoint,
+    setEndPoint,
+    color,
+    setColor,
+    shapeType,
+    setShapeType,
+    nodesArray,
+    setNodes,
+    redraw,
+    setRedraw,
+  } = useContext(CanvasContext);
 
-  const [shapes, setShapes] = useState([]);
-  const [selectedShapeId, setSelectedShapeId] = useState(null);
-  const [isSelected, setSelected] = useState(false);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-  const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
-  const [color, setColor] = useState("white");
-  const [shapeType, setShapeType] = useState("");
-  const [nodesArray, setNodes] = useState([]);
   React.useEffect(() => {
     if (isSelected) {
       if (trRef.current) {
@@ -32,7 +46,11 @@ const Canvas = () => {
         trRef.current.getLayer().batchDraw();
       }
     }
-  }, [isSelected]);
+    if (redraw) {
+      layerRef.current.batchDraw();
+      setRedraw(false);
+    }
+  }, [isSelected, redraw]);
 
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.evt;
@@ -109,12 +127,9 @@ const Canvas = () => {
   };
 
   const handleStageClick = (e) => {
-    console.log(e);
     if (e.target === e.target.getStage()) {
-      console.log("stage");
       setSelected(false);
       setSelectedShapeId(null);
-      //console.log("handleStageClick");
       setNodes([]);
       trRef.current.nodes(nodesArray);
     }
@@ -137,7 +152,6 @@ const Canvas = () => {
 
   const toggleSelection = (node) => {
     var isSelected = nodesArray.includes(node);
-    console.log("toggleSelection");
     setNodes([...nodesArray, node]);
     console.log("1" + nodesArray);
     trRef.current.getLayer().batchDraw();
@@ -148,63 +162,9 @@ const Canvas = () => {
   };
 
   return (
-    <div>
-      <h6>
-        {isDrawing ? "그림을 그리고 있어요" : "그림을 그리지 않고 있어요."}
-      </h6>
-      <h2>
-        {selectedShapeId == null
-          ? "선택된 도형이 없어요."
-          : JSON.stringify(shapes[selectedShapeId])}
-      </h2>
-      <br></br>
-      <button
-        onClick={() => {
-          setShapeType("rectangle");
-          setIsDrawing(true);
-          setColor("white");
-        }}
-      >
-        사각형
-      </button>
-      <button
-        onClick={() => {
-          setShapeType("circle");
-          setIsDrawing(true);
-          setColor("white");
-        }}
-      >
-        원
-      </button>
-      <button
-        onClick={() => {
-          setShapeType("ellipse");
-          setIsDrawing(true);
-          setColor("white");
-        }}
-      >
-        타원
-      </button>
-      <button
-        onClick={() => {
-          setShapeType("line");
-          setIsDrawing(true);
-          setColor("white");
-        }}
-      >
-        직선
-      </button>
-      <button
-        onClick={() => {
-          setShapeType("");
-          setIsDrawing(false);
-          setColor("white");
-        }}
-      >
-        도형 선택하기
-      </button>
+    <div style={{ float: "left", position: "relative" }}>
       <Stage
-        width={window.innerWidth}
+        width={window.innerWidth - 500}
         height={window.innerHeight}
         ref={stageRef}
         stroke={"Black"}
@@ -215,7 +175,6 @@ const Canvas = () => {
       >
         <Layer ref={layerRef}>
           {shapes.map((shape, index) => {
-            console.log(shape);
             const type = shapeType;
             //const width = Math.abs(end.x - start.x);
             //const height = Math.abs(end.y - start.y);
@@ -330,7 +289,19 @@ const Canvas = () => {
             }
             if (shape.type === "line") {
               return (
-                <Line
+                <Shape
+                  key={index}
+                  shapeProps={shapeProps}
+                  ref={shapeRef}
+                  isSelected={index === selectedShapeId}
+                  getLength={shapes.length}
+                  onSelect={(event, e) => handleShapeClick(event, e, index)}
+                  onChange={(newAttrs) => {
+                    shapes[index] = newAttrs;
+                    setShapes(shapes);
+                  }}
+                />
+                /*<Line
                   key={index}
                   //points={[start.x, start.y, end.x, end.y]}
                   stroke={"black"}
@@ -341,7 +312,7 @@ const Canvas = () => {
                     } else handleShapeClick(event, index, shape);
                   }}
                   draggable
-                />
+                />*/
               );
             }
           })}
