@@ -7,13 +7,17 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
     return (
       <Rect
         onClick={(event) => onSelect(event, shapeRef)}
-        onTap={(event) => onSelect(event, shapeRef)}
+        //onTap={(event) => onSelect(event, shapeRef)}
         ref={shapeRef}
         {...shapeProps}
+        x={shapeProps.startX}
+        y={shapeProps.startY}
+        width={shapeProps.endX - shapeProps.startX}
+        height={shapeProps.endY - shapeProps.startY}
+        //const radius = Math.abs(end.x - start.x) / 2;
         name="rectangle"
-        draggable
+        draggable={isSelected}
         onDragEnd={(e) => {
-          console.log(e.target);
           onChange({
             ...shapeProps,
             x: e.target.x(),
@@ -28,11 +32,11 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
-            x: e.target.x(),
-            y: e.target.y(),
+            startX: e.target.x(),
+            startY: e.target.y(),
             // set minimal value
-            width: Math.max(5, e.target.width() * scaleX),
-            height: Math.max(e.target.height() * scaleY),
+            endX: e.target.x() + Math.max(5, e.target.width() * scaleX),
+            endY: e.target.y() + Math.max(e.target.height() * scaleY),
           });
         }}
       />
@@ -46,11 +50,11 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         // ref={shapeRef.current[getKey]}
         ref={shapeRef}
         {...shapeProps}
-        radius={shapeProps.width / 2}
-        x={shapeProps.x + shapeProps.width / 2}
-        y={shapeProps.y + shapeProps.height / 2}
+        x={(shapeProps.startX + shapeProps.endX) / 2}
+        y={(shapeProps.startY + shapeProps.endY) / 2}
+        radius={Math.abs(shapeProps.endX - shapeProps.startX) / 2}
         name="circle"
-        draggable
+        draggable={isSelected}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
@@ -84,12 +88,12 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         onTap={(event) => onSelect(event, shapeRef)}
         ref={shapeRef}
         {...shapeProps}
-        x={shapeProps.x + shapeProps.width / 2}
-        y={shapeProps.y + shapeProps.height / 2}
-        radiusX={shapeProps.width / 2}
-        radiusY={shapeProps.height / 2}
+        x={(shapeProps.startX + shapeProps.endX) / 2}
+        y={(shapeProps.startY + shapeProps.endY) / 2}
+        radiusX={Math.abs(shapeProps.endX - shapeProps.startX) / 2}
+        radiusY={Math.abs(shapeProps.endY - shapeProps.startY) / 2}
         name="rectangle"
-        draggable
+        draggable={isSelected}
         onDragEnd={(e) => {
           console.log(e.target);
           onChange({
@@ -123,13 +127,13 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         ref={shapeRef}
         {...shapeProps}
         points={[
-          shapeProps.x,
-          shapeProps.y,
-          shapeProps.x + shapeProps.width,
-          shapeProps.y + shapeProps.height,
+          shapeProps.startX,
+          shapeProps.startY,
+          shapeProps.endX,
+          shapeProps.endY,
         ]}
         name="line"
-        draggable
+        draggable={isSelected}
         onDragEnd={(e) => {
           console.log(e.target);
           onChange({

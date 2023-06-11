@@ -29,8 +29,6 @@ const Canvas = () => {
     setStartPoint,
     endPoint,
     setEndPoint,
-    color,
-    setColor,
     shapeType,
     setShapeType,
     nodesArray,
@@ -45,6 +43,9 @@ const Canvas = () => {
         trRef.current.nodes(nodesArray);
         trRef.current.getLayer().batchDraw();
       }
+    } else {
+      trRef.current.nodes([]);
+      trRef.current.getLayer().batchDraw();
     }
     if (redraw) {
       layerRef.current.batchDraw();
@@ -63,56 +64,29 @@ const Canvas = () => {
   };
 
   const handleMouseUp = () => {
-    /*if (!isDrawing && selectedShapeId !== null) {
-      const x = endPoint.x - startPoint.x;
-      const y = endPoint.y - startPoint.y;
-      const shape1 = shapes[selectedShapeId];
-
-      const updatedShape = {
-        type: shape1.type,
-        start: { x: shape1.start.x + x, y: shape1.start.y + y },
-        end: { x: shape1.end.x + x, y: shape1.end.y + y },
-        fill: shape1.fill,
-        stroke: shape1.stroke,
-      };
-      updateShape(selectedShapeId, updatedShape);
-      return;
-    } else*/
     if (!isDrawing) return;
     setIsDrawing(false);
-    /*const shape = {
-      type: shapeType, // 원하는 도형 타입 설정
-      start: { ...startPoint },
-      end: { ...endPoint },
-      fill: color,
-      stroke: "black",
-    };
-    setShapes([...shapes, shape]);*/
     const shapeProps = {
       type: shapeType,
-      x: startPoint.x,
-      y: startPoint.y,
-      width: endPoint.x - startPoint.x,
-      height: endPoint.y - startPoint.y,
+      startX: startPoint.x,
+      startY: startPoint.y,
+      endX: endPoint.x,
+      endY: endPoint.y,
       stroke: "black",
-      fill: color,
+      fill: "white",
     };
     setShapes([...shapes, shapeProps]);
-
     setStartPoint({ x: 0, y: 0 });
     setEndPoint({ x: 0, y: 0 });
   };
 
   const handleShapeClick = (event, e, index) => {
-    setSelected(true);
-    setSelectedShapeId(index);
     if (event.evt.ctrlKey) {
       if (e.current !== undefined) {
         let temp = nodesArray;
         if (!nodesArray.includes(e.current)) temp.push(e.current);
+        else temp = temp.filter((item) => item !== e.current);
         setNodes(temp);
-        trRef.current.nodes(nodesArray);
-        trRef.current.getLayer().batchDraw();
       }
     } else {
       event.cancelBubble = true;
@@ -120,10 +94,12 @@ const Canvas = () => {
         let temp = [];
         temp.push(e.current);
         setNodes(temp);
-        trRef.current.nodes(nodesArray);
-        trRef.current.getLayer().batchDraw();
       }
     }
+    setSelected(true);
+    setSelectedShapeId(index);
+    trRef.current.nodes(nodesArray);
+    trRef.current.getLayer().batchDraw();
   };
 
   const handleStageClick = (e) => {
@@ -136,6 +112,10 @@ const Canvas = () => {
   };
 
   const handleDeleteShape = () => {
+    if (nodesArray.length > 1) {
+      alert("delete는 한 도형씩 가능합니다.");
+      return;
+    }
     setShapes((prevShapes) =>
       prevShapes.filter((shape, index) => index !== selectedShapeId)
     );
@@ -175,152 +155,27 @@ const Canvas = () => {
       >
         <Layer ref={layerRef}>
           {shapes.map((shape, index) => {
-            const type = shapeType;
-            //const width = Math.abs(end.x - start.x);
-            //const height = Math.abs(end.y - start.y);
-            const fill = shape.fill;
-            //const radius = Math.abs(end.x - start.x) / 2;
             const shapeProps = shape;
-            /*{
-              type: type,
-              x: start.x,
-              y: start.y,
-              width: width,
-              height: height,
-              stroke: "black",
-              fill: fill,
-            };*/
-            //setShapes([...shapes, shapeProps]);
 
-            if (shape.type === "rectangle") {
-              return (
-                <Shape
-                  key={index}
-                  shapeProps={shapeProps}
-                  ref={shapeRef}
-                  isSelected={index === selectedShapeId}
-                  getLength={shapes.length}
-                  /*onSelect={(e) => {
-                    if (e.current !== undefined) {
-                      let temp = nodesArray;
-                      if (!nodesArray.includes(e.current)) temp.push(e.current);
-                      setNodes(temp);
-                      trRef.current.nodes(nodesArray);
-                      trRef.current.nodes(nodesArray);
-                      trRef.current.getLayer().batchDraw();
-                    }
-                    setSelectedShapeId(index);
-                  }}*/
-                  onSelect={(event, e) => handleShapeClick(event, e, index)}
-                  onChange={(newAttrs) => {
-                    shapes[index] = newAttrs;
-                    setShapes(shapes);
-                  }}
-
-                  //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
-                />
-              );
-            }
-            if (shape.type === "circle") {
-              return (
-                <Shape
-                  key={index}
-                  shapeProps={shapeProps}
-                  ref={shapeRef}
-                  isSelected={index === selectedShapeId}
-                  getLength={shapes.length}
-                  onSelect={(event, e) => handleShapeClick(event, e, index)}
-                  onChange={(newAttrs) => {
-                    shapes[index] = newAttrs;
-                    setShapes(shapes);
-                  }}
-                  //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
-                />
-              );
-              /*<Circle
-                  key={index}
-                  x={(start.x + end.x) / 2}
-                  y={(start.y + end.y) / 2}
-                  radius={radius}
-                  stroke={"black"}
-                  fill={fill}
-                  onClick={(event) => {
-                    if (event.evt.ctrlKey) {
-                      toggleSelection(event.current);
-                      console.log("ctrl 눌렸다.");
-                    } else handleShapeClick(event, index, shape);
-                  }}
-                  draggable
-                />
-              );*/
-            }
-            if (shape.type === "ellipse") {
-              return (
-                <Shape
-                  key={index}
-                  shapeProps={shapeProps}
-                  ref={shapeRef}
-                  isSelected={index === selectedShapeId}
-                  getLength={shapes.length}
-                  onSelect={(event, e) => handleShapeClick(event, e, index)}
-                  onChange={(newAttrs) => {
-                    shapes[index] = newAttrs;
-                    setShapes(shapes);
-                  }}
-                  //onUpdate={(updatedShape) => updateShape(index, updatedShape)}
-                />
-              );
-              /*<Ellipse
-                  key={index}
-                  //x={(start.x + end.x) / 2}
-                  //y={(start.y + end.y) / 2}
-                  //radiusX={width / 2}
-                  //radiusY={height / 2}
-                  stroke={"black"}
-                  fill={fill}
-                  onClick={(event) => {
-                    if (window.event.ctrlKey) {
-                      toggleSelection(event.current);
-                    } else handleShapeClick(event, index, shape);
-                  }}
-                  draggable
-                />
-              );*/
-            }
-            if (shape.type === "line") {
-              return (
-                <Shape
-                  key={index}
-                  shapeProps={shapeProps}
-                  ref={shapeRef}
-                  isSelected={index === selectedShapeId}
-                  getLength={shapes.length}
-                  onSelect={(event, e) => handleShapeClick(event, e, index)}
-                  onChange={(newAttrs) => {
-                    shapes[index] = newAttrs;
-                    setShapes(shapes);
-                  }}
-                />
-                /*<Line
-                  key={index}
-                  //points={[start.x, start.y, end.x, end.y]}
-                  stroke={"black"}
-                  fill={fill}
-                  onClick={(event) => {
-                    if (window.event.ctrlKey) {
-                      toggleSelection(index, shape);
-                    } else handleShapeClick(event, index, shape);
-                  }}
-                  draggable
-                />*/
-              );
-            }
+            return (
+              <Shape
+                key={index}
+                shapeProps={shapeProps}
+                ref={shapeRef}
+                isSelected={index === selectedShapeId}
+                getLength={shapes.length}
+                onSelect={(event, e) => handleShapeClick(event, e, index)}
+                onChange={(newAttrs) => {
+                  shapes[index] = newAttrs;
+                  setShapes(shapes);
+                }}
+              />
+            );
           })}
 
           <Transformer
             ref={trRef}
             boundBoxFunc={(oldBox, newBox) => {
-              // limit resize
               if (newBox.width < 5 || newBox.height < 5) {
                 return oldBox;
               }

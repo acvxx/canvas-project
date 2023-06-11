@@ -21,6 +21,8 @@ const Manage = () => {
     selectedShapeId,
     setSelectedShapeId,
     setRedraw,
+    setSelected,
+    setNodes,
   } = useContext(CanvasContext);
 
   const shapeDown = (selectedShapeId) => {
@@ -63,6 +65,10 @@ const Manage = () => {
         onClick={() => {
           setShapeType("rectangle");
           setIsDrawing(true);
+          setSelectedShapeId(null);
+
+          setSelected(false);
+          setNodes([]);
         }}
       >
         사각형
@@ -77,6 +83,10 @@ const Manage = () => {
         onClick={() => {
           setShapeType("circle");
           setIsDrawing(true);
+          setSelectedShapeId(null);
+
+          setSelected(false);
+          setNodes([]);
         }}
       >
         원
@@ -91,6 +101,9 @@ const Manage = () => {
         onClick={() => {
           setShapeType("ellipse");
           setIsDrawing(true);
+          setSelectedShapeId(null);
+          setSelected(false);
+          setNodes([]);
         }}
       >
         타원
@@ -105,6 +118,9 @@ const Manage = () => {
         onClick={() => {
           setShapeType("line");
           setIsDrawing(true);
+          setSelectedShapeId(null);
+          setSelected(false);
+          setNodes([]);
         }}
       >
         직선
