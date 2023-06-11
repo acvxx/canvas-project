@@ -68,12 +68,13 @@ const Canvas = () => {
     setIsDrawing(false);
     const shapeProps = {
       type: shapeType,
-      startX: startPoint.x,
-      startY: startPoint.y,
-      endX: endPoint.x,
-      endY: endPoint.y,
+      x: Math.min(startPoint.x, endPoint.x),
+      y: Math.min(startPoint.y, endPoint.y),
+      width: Math.abs(endPoint.x - startPoint.x),
+      height: Math.abs(endPoint.y - startPoint.y),
       stroke: "black",
-      fill: "white",
+      strokeWidth: 5,
+      opacity: 1,
     };
     setShapes([...shapes, shapeProps]);
     setStartPoint({ x: 0, y: 0 });
