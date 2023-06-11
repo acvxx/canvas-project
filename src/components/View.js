@@ -12,7 +12,13 @@ import Shape from "./Shape";
 import CanvasContext from "../CanvasContext";
 
 const View = () => {
-  const { isDrawing, shapes, selectedShapeId } = useContext(CanvasContext);
+  const { isDrawing, shapes, selectedShapeId, nodesArray } =
+    useContext(CanvasContext);
+  const viewProps = (nodesArray) => {
+    if (nodesArray.length == 0) {
+      return;
+    }
+  };
   return (
     <div
       style={{
@@ -22,13 +28,12 @@ const View = () => {
         height: "100vh",
       }}
     >
-      <h6>
-        {isDrawing ? "그림을 그리고 있어요" : "그림을 그리지 않고 있어요."}
-      </h6>
       <h2>
         {selectedShapeId == null
           ? "선택된 도형이 없어요."
-          : JSON.stringify(shapes[selectedShapeId])}
+          : nodesArray.length == 1
+          ? JSON.stringify(shapes[selectedShapeId])
+          : "여러 도형이 선택됐어요."}
       </h2>
     </div>
   );

@@ -40,7 +40,7 @@ const Canvas = () => {
   } = useContext(CanvasContext);
 
   React.useEffect(() => {
-    if (isSelected) {
+    if (selectedShapeId != null) {
       if (trRef.current) {
         trRef.current.nodes(nodesArray);
         trRef.current.getLayer().batchDraw();
@@ -50,7 +50,7 @@ const Canvas = () => {
       layerRef.current.batchDraw();
       setRedraw(false);
     }
-  }, [isSelected, redraw]);
+  }, [selectedShapeId, redraw]);
 
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.evt;
