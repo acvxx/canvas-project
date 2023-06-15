@@ -22,30 +22,37 @@ const Manage = () => {
     setSelectedShapeId,
     setRedraw,
     setSelected,
+    nodesArray,
     setNodes,
   } = useContext(CanvasContext);
 
   const shapeDown = (selectedShapeId) => {
-    console.log("Down" + shapes);
     if (selectedShapeId == null) return;
-    const newArray = [...shapes]; // 기존 배열을 복사하여 새로운 배열 생성
-    const element = newArray.splice(selectedShapeId, 1)[0]; // 해당 요소를 배열에서 제거하고 가져옴
-    newArray.unshift(element); // 가져온 요소를 배열의 맨 앞으로 추가
-    setShapes(newArray);
-    console.log(newArray);
+    const newShapes = [...shapes]; // 기존 배열을 복사하여 새로운 배열 생성
+    const element = newShapes.splice(selectedShapeId, 1)[0]; // 해당 요소를 배열에서 제거하고 가져옴
+    newShapes.unshift(element); // 가져온 요소를 배열의 맨 앞으로 추가
+    setShapes(newShapes);
     setSelectedShapeId(0);
   };
 
   const shapeUp = (selectedShapeId) => {
     if (selectedShapeId == null) return;
-    console.log("Up" + shapes);
-    const newArray = [...shapes]; // 기존 배열을 복사하여 새로운 배열 생성
-    const element = newArray.splice(selectedShapeId, 1)[0]; // 해당 요소를 배열에서 제거하고 가져옴
-    newArray.push(element); // 가져온 요소를 배열의 맨 뒤로 추가
-    setShapes(newArray);
-    console.log(newArray);
+    const newShapes = [...shapes]; // 기존 배열을 복사하여 새로운 배열 생성
+    const element = newShapes.splice(selectedShapeId, 1)[0]; // 해당 요소를 배열에서 제거하고 가져옴
+    newShapes.push(element); // 가져온 요소를 배열의 맨 뒤로 추가
+    setShapes(newShapes);
+    setSelectedShapeId(newShapes.length - 1);
+  };
 
-    setSelectedShapeId(newArray.length - 1);
+  const handleDeleteShape = () => {
+    if (nodesArray.length > 1) {
+      alert("delete는 한 도형씩 가능합니다.");
+      return;
+    }
+    setShapes((prevShapes) =>
+      prevShapes.filter((shape, index) => index !== selectedShapeId)
+    );
+    setSelectedShapeId(null);
   };
 
   return (
@@ -173,6 +180,19 @@ const Manage = () => {
         }}
       >
         아래로
+      </button>
+      <button
+        style={{
+          width: "90%",
+          height: "80px",
+          margin: "5px",
+          fontSize: "20px",
+        }}
+        onClick={() => {
+          handleDeleteShape();
+        }}
+      >
+        삭제
       </button>
     </div>
   );

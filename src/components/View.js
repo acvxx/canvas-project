@@ -27,9 +27,7 @@ const View = () => {
     } else {
       const newAttrs = { ...shape, [property]: event.target.value };
       shapes[selectedShapeId] = newAttrs;
-      console.log(newAttrs);
     }
-    console.log(shapes);
     setShapes(shapes);
     setRedraw(true);
   };

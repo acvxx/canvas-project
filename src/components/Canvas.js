@@ -74,6 +74,7 @@ const Canvas = () => {
       height: Math.abs(endPoint.y - startPoint.y),
       stroke: "black",
       strokeWidth: 5,
+      shadowBlur: 0,
       opacity: 1,
     };
     setShapes([...shapes, shapeProps]);
@@ -110,36 +111,6 @@ const Canvas = () => {
       setNodes([]);
       trRef.current.nodes(nodesArray);
     }
-  };
-
-  const handleDeleteShape = () => {
-    if (nodesArray.length > 1) {
-      alert("delete는 한 도형씩 가능합니다.");
-      return;
-    }
-    setShapes((prevShapes) =>
-      prevShapes.filter((shape, index) => index !== selectedShapeId)
-    );
-    setSelectedShapeId(null);
-  };
-
-  const updateShape = (index, updatedShape) => {
-    setShapes((prevShapes) => {
-      const updatedShapes = [...prevShapes];
-      updatedShapes[index] = updatedShape;
-      return updatedShapes;
-    });
-  };
-
-  const toggleSelection = (node) => {
-    var isSelected = nodesArray.includes(node);
-    setNodes([...nodesArray, node]);
-    console.log("1" + nodesArray);
-    trRef.current.getLayer().batchDraw();
-    trRef.current.nodes(nodesArray);
-    layerRef.current.batchDraw();
-    console.log("2" + nodesArray);
-    setSelected(true);
   };
 
   return (
@@ -185,7 +156,6 @@ const Canvas = () => {
           />
         </Layer>
       </Stage>
-      <button onClick={handleDeleteShape}>Delete</button>
     </div>
   );
 };
