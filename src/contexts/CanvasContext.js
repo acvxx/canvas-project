@@ -3,20 +3,19 @@ import { createContext, useState } from "react";
 const CanvasContext = createContext();
 export const CanvasProvider = ({ children }) => {
   const [shapes, setShapes] = useState([]); //
-  const [selectedShapeId, setSelectedShapeId] = useState(null); //
+  const [selectedShapes, setSelectedShapes] = useState([]); //
   const [isSelected, setSelected] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false); //
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
-  const [color, setColor] = useState("white");
   const [shapeType, setShapeType] = useState(""); //
   const [nodesArray, setNodes] = useState([]);
   const [redraw, setRedraw] = useState(false);
   const canvasState = {
     shapes,
     setShapes,
-    selectedShapeId,
-    setSelectedShapeId,
+    selectedShapes,
+    setSelectedShapes,
     isSelected,
     setSelected,
     isDrawing,
@@ -25,8 +24,6 @@ export const CanvasProvider = ({ children }) => {
     setStartPoint,
     endPoint,
     setEndPoint,
-    color,
-    setColor,
     shapeType,
     setShapeType,
     nodesArray,

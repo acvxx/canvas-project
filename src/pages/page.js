@@ -1,8 +1,8 @@
 import { Component } from "react";
-import Canvas from "../components/Canvas";
-import Manage from "../components/Manage";
-import View from "../components/View";
-import { CanvasProvider } from "../CanvasContext";
+import { CanvasProvider } from "../contexts/CanvasContext";
+import CanvasContainer from "../containers/CanvasContainer";
+import View from "../containers/View";
+import Manage from "../containers/Manage";
 
 class Page extends Component {
   // 상위 컴포넌트의 state 값을 하위 컴포넌트의 props로 전달
@@ -12,7 +12,7 @@ class Page extends Component {
         <div className="Page">
           <Manage></Manage>
           <View></View>
-          <Canvas></Canvas>
+          <CanvasContainer></CanvasContainer>
         </div>
       </CanvasProvider>
     );

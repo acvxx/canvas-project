@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Rect, Circle, Ellipse, Line, Text } from "react-konva";
 
 const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
@@ -12,6 +12,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         {...shapeProps}
         name="rectangle"
         draggable={isSelected}
+        rotation={shapeProps.angle}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
@@ -22,14 +23,14 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
-
+          const angle = e.target.rotation();
           e.target.scaleX(1);
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
+            angle: angle,
             x: e.target.x(),
             y: e.target.y(),
-            // set minimal value
             width: Math.max(e.target.width() * scaleX),
             height: Math.max(e.target.height() * scaleY),
           });
@@ -47,6 +48,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         x={shapeProps.x + shapeProps.width / 2}
         y={shapeProps.y + shapeProps.height / 2}
         radius={shapeProps.width / 2}
+        rotation={shapeProps.angle}
         name="circle"
         draggable={isSelected}
         onDragEnd={(e) => {
@@ -59,10 +61,12 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
+          const angle = e.target.rotation();
           e.target.scaleX(1);
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
+            angle: angle,
             width: e.target.width() * scaleX,
             height: e.target.height() * scaleY,
             x: e.target.x() - (e.target.width() * scaleX) / 2,
@@ -85,6 +89,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         radiusY={shapeProps.height / 2}
         name="rectangle"
         draggable={isSelected}
+        rotation={shapeProps.angle}
         onDragEnd={(e) => {
           onChange({
             ...shapeProps,
@@ -95,11 +100,13 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
+          const angle = e.target.rotation();
 
           e.target.scaleX(1);
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
+            angle: angle,
             width: e.target.width() * scaleX,
             height: e.target.height() * scaleY,
             x: e.target.x() - (e.target.width() * scaleX) / 2,
@@ -109,7 +116,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
       />
     );
   }
-  if (shapeProps.type == "line") {
+  if (shapeProps.type === "line") {
     return (
       <Line
         onClick={(event) => onSelect(event, shapeRef)}
@@ -119,6 +126,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         points={[0, 0, shapeProps.width, shapeProps.height]}
         fill={shapeProps.fill}
         stroke={shapeProps.stroke}
+        rotation={shapeProps.angle}
         name="line"
         draggable={isSelected}
         onDragEnd={(e) => {
@@ -131,10 +139,12 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         onTransformEnd={(e) => {
           const scaleX = e.target.scaleX();
           const scaleY = e.target.scaleY();
+          const angle = e.target.rotation();
           e.target.scaleX(1);
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
+            angle: angle,
             width: e.target.width() * scaleX,
             height: e.target.height() * scaleY,
             x: e.target.x(),
@@ -144,7 +154,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
       />
     );
   }
-  if (shapeProps.type == "text") {
+  if (shapeProps.type === "text") {
     return (
       <Text
         onClick={(event) => onSelect(event, shapeRef)}
@@ -155,6 +165,7 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
         text={shapeProps.text || "텍스트를 입력하세요."}
         fill={shapeProps.fill || "black"}
         fontSize={50}
+        rotation={shapeProps.angle}
         name="text"
         draggable={isSelected}
         onDragEnd={(e) => {
@@ -165,12 +176,12 @@ const Shape = ({ shapeProps, isSelected, onSelect, onChange, onClick }) => {
           });
         }}
         onTransformEnd={(e) => {
-          const scaleX = e.target.scaleX();
-          const scaleY = e.target.scaleY();
+          const angle = e.target.rotation();
           e.target.scaleX(1);
           e.target.scaleY(1);
           onChange({
             ...shapeProps,
+            angle: angle,
             x: e.target.x(),
             y: e.target.y(),
           });
