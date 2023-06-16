@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 import CanvasContext from "../contexts/CanvasContext";
-import CanvasView from "../components/canvas/CanvasView";
+import CanvasView from "./CanvasView";
 
 const CanvasContainer = () => {
   const trRef = useRef();

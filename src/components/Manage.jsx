@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import CanvasContext from "../contexts/CanvasContext";
-import { CreateButton } from "../components/button/CreateButton";
-import { FeatureButton } from "../components/button/FeatureButton";
+import { CreateButton } from "./button/CreateButton";
+import { FeatureButton } from "./button/FeatureButton";
 
 const Manage = () => {
   const { shapes, setShapes, selectedShapes, setSelectedShapes, nodesArray } =
@@ -46,7 +46,7 @@ const Manage = () => {
         width: "200px",
         paddingTop: "50px",
         float: "left",
-        background: "gray",
+        background: "#eeeeee",
         flex: "none",
         box: "border-box",
         height: "100vh",

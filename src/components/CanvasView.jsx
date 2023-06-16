@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Stage, Layer, Transformer } from "react-konva";
-import Shape from "../shape/Shape";
+import Shape from "./shape/Shape";
 
 const CanvasView = (props) => {
   const shapeRef = useRef();
@@ -20,7 +20,7 @@ const CanvasView = (props) => {
   return (
     <div style={{ float: "left", position: "relative" }}>
       <Stage
-        width={window.innerWidth - 650}
+        width={window.innerWidth - 700}
         height={window.innerHeight}
         stroke={"Black"}
         onMouseDown={handleMouseDown}

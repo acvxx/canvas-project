@@ -7,4 +7,7 @@ export const StyledButton = styled.button`
   font-size: 25px;
   font-weight: bold;
   font-family: Century Gothic, Arial;
+  border-radius: 80px;
+  border: none;
+  background-color: lightgray;
 `;
