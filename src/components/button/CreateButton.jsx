@@ -3,20 +3,15 @@ import { StyledButton } from "./style";
 import CanvasContext from "../../contexts/CanvasContext";
 
 export const CreateButton = (props) => {
-  const {
-    setSelectedShapes,
-    setIsDrawing,
-    setSelected,
-    setShapeType,
-    setNodes,
-  } = useContext(CanvasContext);
+  const { setSelectedShapes, setMode, setSelected, setShapeType, setNodes } =
+    useContext(CanvasContext);
   const { shapeType } = props;
 
   return (
     <StyledButton
       onClick={() => {
         setShapeType(shapeType);
-        setIsDrawing(true);
+        setMode("draw");
         setSelectedShapes([]);
         setSelected(false);
         setNodes([]);

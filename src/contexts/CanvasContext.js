@@ -5,7 +5,7 @@ export const CanvasProvider = ({ children }) => {
   const [shapes, setShapes] = useState([]); //
   const [selectedShapes, setSelectedShapes] = useState([]); //
   const [isSelected, setSelected] = useState(false);
-  const [isDrawing, setIsDrawing] = useState(false); //
+  const [mode, setMode] = useState("select"); //
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
   const [shapeType, setShapeType] = useState(""); //
@@ -18,8 +18,8 @@ export const CanvasProvider = ({ children }) => {
     setSelectedShapes,
     isSelected,
     setSelected,
-    isDrawing,
-    setIsDrawing,
+    mode,
+    setMode,
     startPoint,
     setStartPoint,
     endPoint,

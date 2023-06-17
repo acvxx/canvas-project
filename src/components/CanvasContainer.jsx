@@ -10,8 +10,8 @@ const CanvasContainer = () => {
     setShapes,
     selectedShapes,
     setSelectedShapes,
-    isDrawing,
-    setIsDrawing,
+    mode,
+    setMode,
     startPoint,
     setStartPoint,
     endPoint,
@@ -50,9 +50,8 @@ const CanvasContainer = () => {
   };
 
   const handleMouseUp = () => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
-    console.log(shapeType);
+    if (mode == "select") return;
+    setMode("select");
     const shapeProps = {
       type: shapeType,
       x: Math.min(startPoint.x, endPoint.x),
